@@ -1,0 +1,10 @@
+const STATUS = {
+    PROGRESS: "IN PROGRESS",
+    PENDING: "PENDING",
+    COMPLETED: "COMPLETED",
+    POSTPONED: "POSTPONED",
+    DELETED: "DELETED"
+}
+
+
+module.exports = { STATUS }
