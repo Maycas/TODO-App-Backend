@@ -3,12 +3,14 @@ const express = require('express')
 const router = express.Router();
 const app = express()
 const port = process.env.port || 5001
+const cors = require('cors')
 
 const logger = require('./src/middlewares/logger');
 
 const tasksRouter = require('./src/routes/tasks');
 
 // Middlewares
+app.use(cors())
 app.use(logger)
 app.use(express.json())
 
