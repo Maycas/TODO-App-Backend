@@ -67,8 +67,6 @@ router.get(
 	(req, res, next) => {
 		const { datemin, datemax, search, status } = req.query;
 
-        console.log(status.split(','))
-
 		const foundTasks = tasks.filter((task) => {
 			const dateMinMatch =
 				!datemin ||
