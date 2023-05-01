@@ -24,7 +24,7 @@ let tasks = [
 	},
 	{
 		id: '1cc0282f-97fc-41aa-a9e3-3e295d824cdc',
-		title: 'Preparar luggage',
+		title: 'Prepare luggage',
 		dueDate: '2023/07/20 11:54:30',
 		status: 'IN PROGRESS',
 		createdAt: '2023/04/15 18:30:00',
@@ -109,6 +109,9 @@ router.post(
 	'/',
 	fieldFormatValidator('body')(createTaskBodySchema),
 	(req, res, next) => {
+
+        console.log(req.body)
+
 		const newTask = {
 			id: uuidv4(),
 			title: req.body.title,
@@ -121,7 +124,7 @@ router.post(
 
 		// 400 - Duplicated Task
 		const duplicated = tasks.find((task) => task.title === newTask.title);
-		if (duplicated) return res.status(400).json({ msg: 'Task already exists' });
+		if (duplicated && duplicated.status !== STATUS.DELETED) return res.status(400).json({ msg: 'Task already exists' });
 
 		// 200 - Task added correctly
 		tasks.push(newTask);
