@@ -67,14 +67,6 @@ GET /tasks
 | modifiedAt | String | Task last modification date |
 | deletedAt | String | Task deletion date |
 
-#### Error responses
-
-##### 404 - Task not Found
-
-```json
-{ msg: "No tasks were found" }
-```
-
 #### Example
 
 **Request**

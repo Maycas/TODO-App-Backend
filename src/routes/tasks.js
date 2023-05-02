@@ -77,17 +77,12 @@ router.get(
 				(typeof datemax === 'string' &&
 					Date.parse(task.dueDate) <= Date.parse(datemax));
 			const searchMatch = !search || task.title.includes(search);
-            const statusMatch = !status || status.split(',').includes(task.status)
+			const statusMatch = !status || status.split(',').includes(task.status);
 
 			return dateMinMatch && dateMaxMatch && searchMatch && statusMatch;
 		});
 
-		// 404 - Tasks not found
-		if (foundTasks.length === 0) {
-			return res.status(404).json({ msg: 'No tasks were found' });
-		}
-
-		// 200 - Sending all tasks
+		// 200 - Sending all tasks, even if the result is []
 		res.status(200).json(foundTasks);
 	}
 );
@@ -109,8 +104,7 @@ router.post(
 	'/',
 	fieldFormatValidator('body')(createTaskBodySchema),
 	(req, res, next) => {
-
-        console.log(req.body)
+		console.log(req.body);
 
 		const newTask = {
 			id: uuidv4(),
@@ -124,7 +118,8 @@ router.post(
 
 		// 400 - Duplicated Task
 		const duplicated = tasks.find((task) => task.title === newTask.title);
-		if (duplicated && duplicated.status !== STATUS.DELETED) return res.status(400).json({ msg: 'Task already exists' });
+		if (duplicated && duplicated.status !== STATUS.DELETED)
+			return res.status(400).json({ msg: 'Task already exists' });
 
 		// 200 - Task added correctly
 		tasks.push(newTask);
