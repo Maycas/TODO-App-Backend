@@ -86,13 +86,14 @@ router.get(
 // GET A task - /tasks/:id
 router.get('/:id', (req, res, next) => {
 	const taskId = req.params.id;
-	const foundTask = tasks.find((task) => task.id === taskId);
 
-	// 404 - Task not found
-	if (!foundTask) return res.status(404).json({ msg: 'Task not found' });
-
-	// 200 - Found the task
-	res.status(200).json(foundTask);
+	Task.findById(taskId)
+		.then((task) =>
+			task
+				? res.status(200).json(task)
+				: res.status(404).json({ msg: 'Task not found' })
+		)
+		.catch((error) => res.status(500).json(error.message));
 });
 
 // POST A task - /tasks
@@ -100,26 +101,25 @@ router.post(
 	'/',
 	fieldFormatValidator('body')(createTaskBodySchema),
 	(req, res, next) => {
-		console.log(req.body);
+		const { title, dueDate } = req.body;
 
-		const newTask = {
-			id: uuidv4(),
-			title: req.body.title,
-			dueDate: req.body.dueDate,
-			status: STATUS.PENDING,
-			createdAt: formatDate(new Date()),
-			modifiedAt: undefined,
-			deletedAt: undefined,
-		};
-
-		// 400 - Duplicated Task
-		const duplicated = tasks.find((task) => task.title === newTask.title);
-		if (duplicated && duplicated.status !== STATUS.DELETED)
-			return res.status(400).json({ msg: 'Task already exists' });
-
-		// 200 - Task added correctly
-		tasks.push(newTask);
-		res.status(200).json(newTask);
+		// Check duplicated tasks
+		Task.findOne({ title: title })
+			.then((task) => {
+				if (task) {
+					res.status(400).json({ msg: 'Task already exits' });
+				} else {
+					Task.create({
+						title: title,
+						dueDate: dueDate,
+						status: STATUS.PENDING,
+						createdAt: formatDate(new Date()),
+					})
+						.then((task) => res.status(200).json(task))
+						.catch((error) => res.status(500).json(error.message));
+				}
+			})
+			.catch((error) => res.status(500).json(error.message));
 	}
 );
 
