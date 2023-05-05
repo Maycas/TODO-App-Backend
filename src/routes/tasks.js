@@ -3,6 +3,8 @@ const { v4: uuidv4 } = require('uuid');
 const { formatDate } = require('../utils/helperFunctions/formatDate');
 const { STATUS } = require('../utils/constants/constants');
 
+const Task = require('../models/task.model');
+
 const { fieldFormatValidator } = require('../middlewares/validator');
 const { getTasksQuerySchema } = require('../schemas/getTasksQuerySchema');
 const { createTaskBodySchema } = require('../schemas/createTaskBodySchema');
@@ -44,7 +46,7 @@ let tasks = [
 		id: '659343c9-f99c-48a0-838c-3b2a9bc83339',
 		title: 'Celebrate Christmas',
 		dueDate: '2023/12/25 12:07:23',
-		status: 'PENDING',
+		status: 'POSTPONED',
 		createdAt: '2023/04/15 18:30:00',
 		modifiedAt: '2023/04/18 11:15:00',
 		deletedAt: null,
@@ -67,23 +69,17 @@ router.get(
 	(req, res, next) => {
 		const { datemin, datemax, search, status } = req.query;
 
-		const foundTasks = tasks.filter((task) => {
-			const dateMinMatch =
-				!datemin ||
-				(typeof datemin === 'string' &&
-					Date.parse(task.dueDate) >= Date.parse(datemin));
-			const dateMaxMatch =
-				!datemax ||
-				(typeof datemax === 'string' &&
-					Date.parse(task.dueDate) <= Date.parse(datemax));
-			const searchMatch = !search || task.title.includes(search);
-			const statusMatch = !status || status.split(',').includes(task.status);
+		const filter = {};
+		if (datemin) filter.dueDate = { ...filter.dueDate, $gte: datemin };
+		if (datemax) filter.dueDate = { ...filter.dueDate, $lte: datemax };
+		if (search) filter.title = { $regex: search, $options: 'i' };
+		if (status) filter.status = { $in: status.split(',') };
 
-			return dateMinMatch && dateMaxMatch && searchMatch && statusMatch;
-		});
+		console.log('filter', filter);
 
-		// 200 - Sending all tasks, even if the result is []
-		res.status(200).json(foundTasks);
+		Task.find(filter)
+			.then((tasks) => res.status(200).json(tasks))
+			.catch((error) => res.status(500).json(error.message));
 	}
 );
 
