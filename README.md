@@ -217,7 +217,9 @@ POST /tasks
 
 ### Delete a Task
 
-Deletes a task by its id, applying a soft delete mechanism, which means that the task stays in the database but in a DELETED status.
+Deletes a task by its id.
+
+By default it applies a soft delete mechanism, which means that the task stays in the database but in a DELETED status. To remove it from database, use `forceDelete` query params.
 
 ```
 DELETE /tasks/:id
@@ -228,6 +230,12 @@ DELETE /tasks/:id
 | Parameter | Type | Required | Description | Example |
 |-----------|------|----------|-------------|---------|
 | id | String | True | Unique identifier of the task to delete | 1cc0282f-97fc-41aa-a9e3-3e295d824cdc |
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description | Example |
+|-----------|------|----------|-------------|---------|
+| forceDelete | Boolean | False | Forces the record to be removed from database | true / false |
 
 #### Response
 

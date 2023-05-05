@@ -75,8 +75,6 @@ router.get(
 		if (search) filter.title = { $regex: search, $options: 'i' };
 		if (status) filter.status = { $in: status.split(',') };
 
-		console.log('filter', filter);
-
 		Task.find(filter)
 			.then((tasks) => res.status(200).json(tasks))
 			.catch((error) => res.status(500).json(error.message));
@@ -126,21 +124,40 @@ router.post(
 // DELETE A task - /tasks/:id
 router.delete('/:id', (req, res, next) => {
 	const taskId = req.params.id;
+	const { forceDelete } = req.query;
 
-	// 404 - Task doesn't exist
-	const foundTaskIndex = tasks.findIndex((task) => task.id === taskId);
-	if (foundTaskIndex === -1)
-		return res
-			.status(404)
-			.json({ msg: `Task with id ${taskId} doesn't exist` });
-
-	// 200 - Task deleted correctly - Soft delete
-	tasks[foundTaskIndex] = {
-		...tasks[foundTaskIndex],
-		status: STATUS.DELETED,
-		deletedAt: formatDate(new Date()),
-	};
-	res.status(200).json({ msg: 'Task successfully deleted' });
+	Task.findById(taskId)
+		.then((task) => {
+			if (!task) {
+				res.status(404).json({ msg: `Task with id ${taskId} doesn't exist` });
+			} else {
+				if (forceDelete) {
+					Task.findByIdAndDelete(taskId)
+						.then(() =>
+							res
+								.status(200)
+								.json({ msg: 'Task successfully removed from Database' })
+						)
+						.catch((error) => res.status(500).json(error.message));
+				} else {
+					Task.findByIdAndUpdate(
+						taskId,
+						{
+							$set: {
+								status: STATUS.DELETED,
+								deletedAt: formatDate(new Date()),
+							},
+						},
+						{
+							new: true,
+						}
+					)
+						.then((updatedTask) => res.status(200).json(updatedTask))
+						.catch((error) => res.status(500).json(error.message));
+				}
+			}
+		})
+		.catch((error) => res.status(500).json(error.message));
 });
 
 // PUT Update a task - /tasks/:id
