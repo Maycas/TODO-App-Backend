@@ -1,5 +1,4 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
 const { formatDate } = require('../utils/helperFunctions/formatDate');
 const { STATUS } = require('../utils/constants/constants');
 
@@ -13,54 +12,6 @@ const {
 } = require('../schemas/updateTaskParamsSchema');
 
 const router = express.Router();
-
-let tasks = [
-	{
-		id: 'f797de88-75a1-48f3-b27d-3650844c2f12',
-		title: 'Prepare Nuclio class',
-		dueDate: '2023/04/20 18:30:00',
-		status: 'COMPLETED',
-		createdAt: '2023/04/15 18:30:00',
-		modifiedAt: null,
-		deletedAt: null,
-	},
-	{
-		id: '1cc0282f-97fc-41aa-a9e3-3e295d824cdc',
-		title: 'Prepare luggage',
-		dueDate: '2023/07/20 11:54:30',
-		status: 'IN PROGRESS',
-		createdAt: '2023/04/15 18:30:00',
-		modifiedAt: null,
-		deletedAt: null,
-	},
-	{
-		id: 'a3cbd0a5-425a-40a5-9e82-e67eaf54c050',
-		title: 'Celebrate end of year',
-		dueDate: '2023/12/31 03:40:00',
-		status: 'PENDING',
-		createdAt: '2023/04/15 03:28:34',
-		modifiedAt: null,
-		deletedAt: null,
-	},
-	{
-		id: '659343c9-f99c-48a0-838c-3b2a9bc83339',
-		title: 'Celebrate Christmas',
-		dueDate: '2023/12/25 12:07:23',
-		status: 'POSTPONED',
-		createdAt: '2023/04/15 18:30:00',
-		modifiedAt: '2023/04/18 11:15:00',
-		deletedAt: null,
-	},
-	{
-		id: 'eca27318-d394-48dd-8d01-2fcc411041ce',
-		title: 'TEST',
-		dueDate: '2023/12/25 18:30:00',
-		status: 'DELETED',
-		createdAt: '2023/04/15 18:30:00',
-		modifiedAt: null,
-		deletedAt: '2023/04/15 19:30:00',
-	},
-];
 
 // GET All tasks - /tasks
 router.get(
