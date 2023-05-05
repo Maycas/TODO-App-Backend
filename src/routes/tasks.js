@@ -168,22 +168,26 @@ router.put(
 		const taskId = req.params.id;
 		const { title, dueDate, status } = req.body;
 
-		//404 - Task doesn't exist
-		const foundTaskIndex = tasks.findIndex((task) => task.id === taskId);
-		if (foundTaskIndex === -1)
-			return res
-				.status(404)
-				.json({ msg: `Task with id ${taskId} doesn't exist` });
-
-		//200 - Task updated correctly
-		tasks[foundTaskIndex] = {
-			...tasks[foundTaskIndex],
-			title: title || tasks[foundTaskIndex].title,
-			dueDate: dueDate || tasks[foundTaskIndex].dueDate,
-			status: status || tasks[foundTaskIndex].status,
-			modifiedAt: formatDate(new Date()),
-		};
-		res.status(200).json(tasks[foundTaskIndex]);
+		Task.findById(taskId)
+			.then((taskToUpdate) => {
+				if (!taskToUpdate) {
+					res.status(404).json({ msg: `Task with id ${taskId} doesn't exist` });
+				} else {
+					Task.findByIdAndUpdate(taskId, {
+						$set: {
+							title: title || taskToUpdate.title,
+							dueDate: dueDate || taskToUpdate.dueDate,
+							status: status || taskToUpdate.status,
+							modifiedAt: formatDate(new Date()),
+						},
+					})
+						.then((updatedTask) =>
+							res.status(200).json({ msg: 'Task updated successfully' })
+						)
+						.catch((error) => res.status(500).json(error.message));
+				}
+			})
+			.catch((error) => res.status(500).json(error.message));
 	}
 );
 
