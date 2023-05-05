@@ -77,7 +77,7 @@ router.get(
 
 		Task.find(filter)
 			.then((tasks) => res.status(200).json(tasks))
-			.catch((error) => res.status(500).json(error.message));
+			.catch((error) => res.status(500).json({ msg: error.message }));
 	}
 );
 
@@ -91,7 +91,7 @@ router.get('/:id', (req, res, next) => {
 				? res.status(200).json(task)
 				: res.status(404).json({ msg: 'Task not found' })
 		)
-		.catch((error) => res.status(500).json(error.message));
+		.catch((error) => res.status(500).json({ msg: error.message }));
 });
 
 // POST A task - /tasks
@@ -114,10 +114,10 @@ router.post(
 						createdAt: formatDate(new Date()),
 					})
 						.then((task) => res.status(200).json(task))
-						.catch((error) => res.status(500).json(error.message));
+						.catch((error) => res.status(500).json({ msg: error.message }));
 				}
 			})
-			.catch((error) => res.status(500).json(error.message));
+			.catch((error) => res.status(500).json({ msg: error.message }));
 	}
 );
 
@@ -138,7 +138,7 @@ router.delete('/:id', (req, res, next) => {
 								.status(200)
 								.json({ msg: 'Task successfully removed from Database' })
 						)
-						.catch((error) => res.status(500).json(error.message));
+						.catch((error) => res.status(500).json({ msg: error.message }));
 				} else {
 					Task.findByIdAndUpdate(
 						taskId,
@@ -153,11 +153,11 @@ router.delete('/:id', (req, res, next) => {
 						}
 					)
 						.then((updatedTask) => res.status(200).json(updatedTask))
-						.catch((error) => res.status(500).json(error.message));
+						.catch((error) => res.status(500).json({ msg: error.message }));
 				}
 			}
 		})
-		.catch((error) => res.status(500).json(error.message));
+		.catch((error) => res.status(500).json({ msg: error.message }));
 });
 
 // PUT Update a task - /tasks/:id
@@ -184,10 +184,10 @@ router.put(
 						.then((updatedTask) =>
 							res.status(200).json({ msg: 'Task updated successfully' })
 						)
-						.catch((error) => res.status(500).json(error.message));
+						.catch((error) => res.status(500).json({ msg: error.message }));
 				}
 			})
-			.catch((error) => res.status(500).json(error.message));
+			.catch((error) => res.status(500).json({ msg: error.message }));
 	}
 );
 
